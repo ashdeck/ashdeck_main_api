@@ -1,0 +1,6 @@
+User authentication steps
+1.get access token in payload
+2.decrypt token to get its info
+3.check if info exists on database or redis server
+4.If on redis, return that info, otherwise check database after checking token expiry
+5.If token is expired, user should refresh the token
