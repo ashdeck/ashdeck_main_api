@@ -1,0 +1,75 @@
+name: Deploy applicatioin
+
+on:
+  push:
+    branches:
+      - development
+      - main
+
+  pull_request:
+    branches:
+      - development
+      - main
+
+jobs:
+  deploy:
+    if: contains(fromJson('["refs/heads/QA", "refs/heads/production", "refs/heads/development"]'), github.ref)
+    runs-on: ubuntu-latest
+    name: Deploy application
+    # needs: test
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      MONGO_INITDB_DATABASE: ${{ secrets.MONGO_DATABASE }}
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          clean: false
+
+      - name: Create Env file
+        run: |
+          touch .env
+          echo DATABASE_URL=$DATABASE_URL >> .env
+          echo MONGO_DATABASE=$MONGO_DATABASE >> .env
+          cat .env
+
+      - name: Upload .env as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: env-vars
+          path: .env
+
+      - name: Source env file
+        run: |
+          source .env
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: false
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 537124948018.dkr.ecr.us-east-1.amazonaws.com
+          docker build -t ashdeck .
+          docker tag ashdeck:latest 537124948018.dkr.ecr.us-east-1.amazonaws.com/ashdeck:latest
+          docker push 537124948018.dkr.ecr.us-east-1.amazonaws.com/ashdeck:latest
+      - name: Update lambda function
+        id: update-lambda
+        # run: |
+        #   aws lambda update-function-code --function-name aichtbot-container-dev --image-uri 537124948018.dkr.ecr.us-east-1.amazonaws.com/ashdeck:latest

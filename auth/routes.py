@@ -78,3 +78,8 @@ async def logout(user=Depends(get_current_user)):
     # remove user from redis
     print(user)
     return {"detail": "User logged out successfully."}
+
+
+@router.get("/me", status_code=200, description="My credentials")
+async def me(user=Depends(get_current_user)):
+    return user

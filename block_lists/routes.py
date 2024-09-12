@@ -38,11 +38,11 @@ async def create_block_list(block_list: BlockList, user=Depends(get_current_user
         owner=owner,
         sites=[
             SiteResponse(
-                    id=site.id,
-                    site_url=site.site_url,
-                    comment=site.comment,
-                    created=site.created
-                ) for site in block_list.sites
+                    id=site["id"],
+                    site_url=site["site_url"],
+                    # comment=site.get("comment") or None,
+                    created=site["created"]
+                ) for site in block_list_dict["sites"]
             ]
     )
     return res
@@ -52,6 +52,7 @@ async def create_block_list(block_list: BlockList, user=Depends(get_current_user
 async def get_user_block_lists(user=Depends(get_current_user)) -> List[BlockListResponse]:
     owner = user["email"]  # should be user_id
     check_redis = False
+    # return user
 
     if not check_redis:
         pass
@@ -73,13 +74,13 @@ async def get_user_block_lists(user=Depends(get_current_user)) -> List[BlockList
             created=block_list["created"],
             updated=block_list.get("updated"),
             sites=[SiteResponse(
-                id=site["_id"],
+                id=site.get("_id"),
                 site_url=site["site_url"],
-                comment=site["comment"],
+                # comment=site["comment"],
                 created=site["created"],
                 updated=site.get("updated")
             ) for site in block_list["sites"]]
-            ) for block_list in block_lists
+        ) for block_list in block_lists
         ]
     return res
 

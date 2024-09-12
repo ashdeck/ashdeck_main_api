@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, Field
 from enum import Enum
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -18,7 +18,7 @@ class Site(BaseModel):
 class BlockList(BaseModel):
     name: str
     comment: str = None
-    type: ListType
+    type: ListType = Field(default="black_list")
     created: datetime = datetime.now(timezone.utc)
     sites: List[Site] = []
 

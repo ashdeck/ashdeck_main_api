@@ -45,9 +45,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    # return {"email": "joshuamjv9@gmail.com"}
 
     if not token:
-        return None
+        raise credentials_exception
 
     try:
         payload = decode_jwt_token(token)

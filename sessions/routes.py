@@ -12,6 +12,7 @@ from .models import ScheduledSession, RecurringSession, Session
 '''
 router = APIRouter()
 
+
 @router.post("", status_code=201, description="Create session")
 async def create_session(session: Session):
     pass
@@ -21,8 +22,9 @@ async def create_session(session: Session):
 async def schedule_session(session: ScheduledSession):
     pass
 
+
 @router.post("/recurring", status_code=201, description="Create session")
-async def schedule_session(session: RecurringSession):
+async def schedule_recurring_session(session: RecurringSession):
     pass
 
 

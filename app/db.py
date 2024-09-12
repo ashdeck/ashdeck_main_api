@@ -1,12 +1,13 @@
 from pymongo import MongoClient
+from .config import settings
 
 
 def connect_to_db():
-    db_url = "mongodb+srv://josh:nmG8uRPYEspcE8IE@cluster0.vfimyzq.mongodb.net/test"
+    db_url = settings.DATABASE_URL
     client = MongoClient(db_url, uuidRepresentation='standard')
 
     try:
-        db = client["website_blocker"]
+        db = client[settings.MONGODB_DATABASE]
         print("Connected to Database")
         return db
     except Exception:
