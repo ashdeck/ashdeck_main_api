@@ -69,7 +69,7 @@ jobs:
           docker build -t ashdeck .
           docker tag ashdeck:latest 537124948018.dkr.ecr.us-east-1.amazonaws.com/ashdeck:latest
           docker push 537124948018.dkr.ecr.us-east-1.amazonaws.com/ashdeck:latest
-      - name: Update lambda function
-        id: update-lambda
+      # - name: Update lambda function
+      #   id: update-lambda
         # run: |
         #   aws lambda update-function-code --function-name aichtbot-container-dev --image-uri 537124948018.dkr.ecr.us-east-1.amazonaws.com/ashdeck:latest
