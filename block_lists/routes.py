@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from .models import BlockList, BlockListResponse, SiteResponse
+from .models import BlockList, BlockListResponse, SiteResponse, UpdateBlockList
 from deps.auth.auth import get_current_user
 from uuid import uuid4
 from app.db import db
 from typing import List
+from datetime import datetime, timezone
 
 
 router = APIRouter()
@@ -17,7 +18,7 @@ async def create_block_list(block_list: BlockList, user=Depends(get_current_user
     id = str(uuid4())
     block_list_dict["_id"] = id
     block_list_dict["owner"] = owner
-    for site in block_list_dict["sites"]:
+    for site in block_list_dict["entries"]:
         site["_id"] = str(uuid4())
 
     insert_id = db["block_lists"].insert_one(block_list_dict).inserted_id
@@ -26,7 +27,7 @@ async def create_block_list(block_list: BlockList, user=Depends(get_current_user
         raise HTTPException(status_code=500, detail="Failed to save list. Please try again later")
 
     block_list_dict["id"] = block_list_dict.pop("_id")
-    for site in block_list_dict["sites"]:
+    for site in block_list_dict["entries"]:
         site["id"] = site.pop("_id")
 
     res = BlockListResponse(
@@ -36,13 +37,13 @@ async def create_block_list(block_list: BlockList, user=Depends(get_current_user
         type=block_list.type,
         created=block_list.created,
         owner=owner,
-        sites=[
+        entries=[
             SiteResponse(
                     id=site["id"],
                     site_url=site["site_url"],
                     # comment=site.get("comment") or None,
                     created=site["created"]
-                ) for site in block_list_dict["sites"]
+                ) for site in block_list_dict["entries"]
             ]
     )
     return res
@@ -73,13 +74,13 @@ async def get_user_block_lists(user=Depends(get_current_user)) -> List[BlockList
             # comment=block_list["comment"],
             created=block_list["created"],
             updated=block_list.get("updated"),
-            sites=[SiteResponse(
+            entries=[SiteResponse(
                 id=site.get("_id"),
                 site_url=site["site_url"],
                 # comment=site["comment"],
                 created=site["created"],
                 updated=site.get("updated")
-            ) for site in block_list["sites"]]
+            ) for site in block_list["entries"]]
         ) for block_list in block_lists
         ]
     return res
@@ -100,13 +101,13 @@ async def get_single_block_list(id: str) -> BlockListResponse:
         comment=block_list["comment"],
         created=block_list["created"],
         updated=block_list.get("updated"),
-        sites=[SiteResponse(
+        entries=[SiteResponse(
                 id=site["id"],
                 site_url=site["site_url"],
                 # comment=site["comment"],
                 created=site["created"],
                 updated=site.get("updated")
-            ) for site in block_list["sites"]]
+            ) for site in block_list["entries"]]
     )
     return res
 
@@ -115,3 +116,17 @@ async def get_single_block_list(id: str) -> BlockListResponse:
 def delete_block_list(id: str):
     db["block_lists"].delete_one({"_id": id})
     return {"message": "List deleted successfully!"}
+
+
+@router.patch("/{id}", status_code=200, dependencies=[Depends(get_current_user)])
+def update_block_list(id: str, blockList: UpdateBlockList):
+    block_list = blockList.model_dump(exclude_none=True)
+
+    for site in block_list["entries"]:
+        if site.get("id"):
+            site["_id"] = site.get("id")
+        else:
+            site["_id"] = str(uuid4())
+            site["created"] = datetime.now(timezone.utc)
+    db["block_lists"].update_one({"_id": id}, {"$set": block_list})
+    return {"message": "Block list updated successfully."}

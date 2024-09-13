@@ -15,19 +15,25 @@ class Site(BaseModel):
     created: datetime = datetime.now(timezone.utc)
 
 
+class UpdateBlockList(BaseModel):
+    name: str = None
+    entries: List[Site] = None
+    updated_at: datetime = datetime.now(timezone.utc)
+
+
 class BlockList(BaseModel):
     name: str
     # comment: str = None
     type: ListType = Field(default="black_list")
     created: datetime = datetime.now(timezone.utc)
-    sites: List[Site] = []
+    entries: List[Site]
 
 
 class SiteResponse(BaseModel):
     id: str
     site_url: str
     # comment: str = None
-    created: datetime
+    created: datetime = None
     updated: Optional[datetime] = None
 
 
@@ -37,6 +43,6 @@ class BlockListResponse(BaseModel):
     owner: str
     type: ListType
     # comment: str = None
-    sites: List[SiteResponse] = []
+    entries: List[SiteResponse] = []
     created: datetime
     updated: Optional[datetime] = None

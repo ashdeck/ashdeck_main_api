@@ -1,4 +1,4 @@
-from jose import jwt, jwe, JWTError
+from jose import jwt
 from fastapi import HTTPException
 from .models import TokenData, TokenExpiry
 from datetime import timedelta, datetime, timezone
