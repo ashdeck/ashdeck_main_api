@@ -19,7 +19,7 @@ jobs:
     # needs: test
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      MONGO_INITDB_DATABASE: ${{ secrets.MONGODB_DATABASE}}
+      MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE}}
 
     permissions:
       id-token: write
@@ -35,7 +35,7 @@ jobs:
         run: |
           touch .env
           echo DATABASE_URL=$DATABASE_URL >> .env
-          echo MONGO_DATABASE=$MONGODB_DATABASE >> .env
+          echo MONGODB_DATABASE=$MONGODB_DATABASE >> .env
           cat .env
 
       - name: Upload .env as artifact
