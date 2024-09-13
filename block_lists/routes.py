@@ -32,7 +32,7 @@ async def create_block_list(block_list: BlockList, user=Depends(get_current_user
     res = BlockListResponse(
         id=id,
         name=block_list.name,
-        comment=block_list.comment,
+        # comment=block_list.comment,
         type=block_list.type,
         created=block_list.created,
         owner=owner,
@@ -70,7 +70,7 @@ async def get_user_block_lists(user=Depends(get_current_user)) -> List[BlockList
             owner=owner,
             name=block_list["name"],
             type=block_list["type"],
-            comment=block_list["comment"],
+            # comment=block_list["comment"],
             created=block_list["created"],
             updated=block_list.get("updated"),
             sites=[SiteResponse(
@@ -103,9 +103,15 @@ async def get_single_block_list(id: str) -> BlockListResponse:
         sites=[SiteResponse(
                 id=site["id"],
                 site_url=site["site_url"],
-                comment=site["comment"],
+                # comment=site["comment"],
                 created=site["created"],
                 updated=site.get("updated")
             ) for site in block_list["sites"]]
     )
     return res
+
+
+@router.delete("/{id}", status_code=200, description="Delete Blocklist", dependencies=[Depends(get_current_user)])
+def delete_block_list(id: str):
+    db["block_lists"].delete_one({"_id": id})
+    return {"message": "List deleted successfully!"}

@@ -11,13 +11,13 @@ class ListType(str, Enum):
 
 class Site(BaseModel):
     site_url: str
-    comment: str = None
+    # comment: str = None
     created: datetime = datetime.now(timezone.utc)
 
 
 class BlockList(BaseModel):
     name: str
-    comment: str = None
+    # comment: str = None
     type: ListType = Field(default="black_list")
     created: datetime = datetime.now(timezone.utc)
     sites: List[Site] = []
@@ -26,7 +26,7 @@ class BlockList(BaseModel):
 class SiteResponse(BaseModel):
     id: str
     site_url: str
-    comment: str = None
+    # comment: str = None
     created: datetime
     updated: Optional[datetime] = None
 
@@ -36,7 +36,7 @@ class BlockListResponse(BaseModel):
     name: str
     owner: str
     type: ListType
-    comment: str = None
+    # comment: str = None
     sites: List[SiteResponse] = []
     created: datetime
     updated: Optional[datetime] = None
