@@ -19,7 +19,7 @@ jobs:
     # needs: test
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      MONGO_INITDB_DATABASE: ${{ secrets.MONGO_DATABASE }}
+      MONGO_INITDB_DATABASE: ${{ secrets.MONGODB_DATABASE}}
 
     permissions:
       id-token: write
