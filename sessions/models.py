@@ -1,6 +1,23 @@
 from pydantic import BaseModel
 from enum import Enum
-from datetime import datetime, timezone
+from datetime import datetime
+from datetime import date
+
+
+class SessionType(str, Enum):
+    start_now = "start_now"
+    start_later = "start_later"
+    recurring = "recurring"
+
+
+class RecurringDays(str, Enum):
+    monday = "monday"
+    tuesday = "tuesday"
+    wednesday = "wednesday"
+    thursday = "thursday"
+    friday = "friday"
+    saturday = "saturday"
+    sunday = "sunday"
 
 
 class WeekDays(BaseModel):
@@ -14,16 +31,10 @@ class WeekDays(BaseModel):
 
 
 class Session(BaseModel):
-    name: str
-    block_lists: list
-
-
-class ScheduledSession(Session):
-    start: datetime
-    end: datetime
-
-
-class RecurringSession(Session):
-    start: datetime
-    end: datetime
-    days: WeekDays
+    device_id: str = None
+    type: SessionType
+    start_time: datetime = None
+    end_time: datetime = None
+    block_lists: list[str]
+    start_date: date
+    recurring_days: list[RecurringDays] = None

@@ -4,6 +4,7 @@ from passlib.context import CryptContext
 from fastapi import HTTPException, Depends
 from pydantic import EmailStr
 from .tokens import decode_jwt_token
+from app.db import db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login", auto_error=False)
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -60,5 +61,5 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         raise credentials_exception
 
     # check redis by user_id
-    user = {"email": "some email in redis"}
+    user = db["users"].find_one({"_id": user_id})
     return user

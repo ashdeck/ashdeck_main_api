@@ -1,5 +1,8 @@
-from fastapi import APIRouter
-from .models import ScheduledSession, RecurringSession, Session
+from fastapi import APIRouter, Depends, HTTPException
+from .models import Session
+from deps.auth.auth import get_current_user
+from uuid import uuid4
+from app.db import db
 
 
 # nest sessions in the database like:
@@ -14,20 +17,41 @@ router = APIRouter()
 
 
 @router.post("", status_code=201, description="Create session")
-async def create_session(session: Session):
-    pass
-
-
-@router.post("/schedule", status_code=201, description="Create session")
-async def schedule_session(session: ScheduledSession):
-    pass
-
-
-@router.post("/recurring", status_code=201, description="Create session")
-async def schedule_recurring_session(session: RecurringSession):
-    pass
+async def create_session(session: Session, user=Depends):
+    id = str(uuid4())
+    session_dict = session.model_dump(exclude_none=True)
+    session_dict["_id"] = id
+    session_dict["user"] = user["_id"]
+    db["sessions"].insert_one(session_dict)
+    session_dict["id"] = session_dict.pop("_id")
+    return session_dict
 
 
 @router.get("/", status_code=200)
-async def get_sessions():
+async def get_sessions(user=Depends(get_current_user)):
+    sessions = db["sessions"].find({"user": user["_id"]})
+    for session in sessions:
+        session["id"] = session.pop("_id")
+    return sessions
+
+
+@router.get("/{id}", status_code=200)
+async def get_single_session(id: str, user=Depends(get_current_user)):
+    session = db["sessions"].find_one({"_id": id})
+    if session:
+        session["id"] = session.pop("_id")
+        return session
+    raise HTTPException(status_code=400, detail="Session not found.")
+
+
+@router.patch("/{id}", status_code=200, dependencies=[Depends(get_current_user)])
+async def update_session(id: str):
     pass
+
+
+@router.delete("/{id}", status_code=200, dependencies=[Depends(get_current_user)])
+async def delete_session(id: str):
+    session = db["sessions"].find_one_and_delete({"_id": id})
+    if session:
+        return f"{session['name']} has been deleted successfully"
+    raise HTTPException(status_code=400, detail="Session with this ID does not exist.")
