@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.post("", status_code=201, description="Create session")
-async def create_session(session: Session, user=Depends):
+async def create_session(session: Session, user=Depends(get_current_user)):
     id = str(uuid4())
     session_dict = session.model_dump(exclude_none=True)
     session_dict["_id"] = id
@@ -27,11 +27,12 @@ async def create_session(session: Session, user=Depends):
     return session_dict
 
 
-@router.get("/", status_code=200)
+@router.get("", status_code=200)
 async def get_sessions(user=Depends(get_current_user)):
-    sessions = db["sessions"].find({"user": user["_id"]})
+    sessions = list(db["sessions"].find({"user": user["_id"]}))
     for session in sessions:
         session["id"] = session.pop("_id")
+    print(sessions)
     return sessions
 
 

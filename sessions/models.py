@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from enum import Enum
 from datetime import datetime
-from datetime import date
 
 
 class SessionType(str, Enum):
@@ -32,9 +31,12 @@ class WeekDays(BaseModel):
 
 class Session(BaseModel):
     device_id: str = None
+    name: str = "New Session"
     type: SessionType
     start_time: datetime = None
     end_time: datetime = None
     block_lists: list[str]
-    start_date: date
+    start_date: str = None
+    notes: str = None
+    paused: str = None
     recurring_days: list[RecurringDays] = None
