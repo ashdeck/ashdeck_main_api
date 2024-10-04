@@ -38,5 +38,5 @@ class Session(BaseModel):
     block_lists: list[str]
     start_date: str = None
     notes: str = None
-    paused: str = None
+    paused: bool = False
     recurring_days: list[RecurringDays] = None
