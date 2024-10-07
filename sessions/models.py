@@ -40,3 +40,13 @@ class Session(BaseModel):
     notes: str = None
     paused: bool = False
     recurring_days: list[RecurringDays] = None
+
+
+class UpdateSession(BaseModel):
+    end_time: datetime = None
+    start_time: datetime = None
+    type: SessionType = None
+    block_lists: list[str] = None
+    paused: bool = False
+    notes: str = None
+    recurring_days: list[RecurringDays] = None

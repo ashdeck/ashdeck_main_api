@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from .models import Session
+from .models import Session, UpdateSession
 from deps.auth.auth import get_current_user
 from uuid import uuid4
 from app.db import db
@@ -46,8 +46,10 @@ async def get_single_session(id: str, user=Depends(get_current_user)):
 
 
 @router.patch("/{id}", status_code=200, dependencies=[Depends(get_current_user)])
-async def update_session(id: str):
-    pass
+async def update_session(id: str, data: UpdateSession):
+    data = data.model_dump(exclude_none=True)
+    db["sessions"].update_one({"_id": id}, {"$set": data})
+    return {"message": "Session updated successfully."}
 
 
 @router.delete("/{id}", status_code=200, dependencies=[Depends(get_current_user)])
