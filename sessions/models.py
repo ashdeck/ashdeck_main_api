@@ -49,4 +49,5 @@ class UpdateSession(BaseModel):
     block_lists: list[str] = None
     paused: bool = False
     notes: str = None
+    paused: bool = None
     recurring_days: list[RecurringDays] = None
