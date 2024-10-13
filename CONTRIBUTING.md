@@ -23,8 +23,8 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 ## Any contributions you make will be under the GNU AFFERO GENERAL PUBLIC LICENSE
 In short, when you submit code changes, your submissions are understood to be under the same [GNU AFFERO GENERAL PUBLIC LICENSE](https://www.gnu.org/licenses/) that covers the project. Feel free to contact the maintainers if that's a concern.
 
-## Report bugs using Github's [issues](https://github.com/ashdeck/ashdeck_admin_api/issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](); it's that easy!
+## Report bugs using Github's [issues](https://github.com/ashdeck/ashdeck_main_api/issues)
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/ashdeck/ashdeck_main_api/issues/new); it's that easy!
 
 ## Write bug reports with detail, background, and sample code
 [This is an example](http://stackoverflow.com/q/12488905/180626) of a bug report by [Brian A. Danielak](https://gist.github.com/briandk), and I think it's not a bad model. Here's [another example from Craig Hockenberry](http://www.openradar.me/11905408), a great app developer.
