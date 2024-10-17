@@ -3,6 +3,7 @@ from .models import Session, UpdateSession
 from deps.auth.auth import get_current_user
 from uuid import uuid4
 from app.db import db
+from datetime import datetime, timezone
 
 
 # nest sessions in the database like:
@@ -34,6 +35,14 @@ async def get_sessions(user=Depends(get_current_user)):
         session["id"] = session.pop("_id")
     print(sessions)
     return sessions
+
+
+@router.get("/active_sessions", status_code=200)
+async def get_active_sessions():
+    sessions = db["sessions"].find({"end_time": {"$gte": datetime.now(tz=timezone.utc)}})
+    if sessions:
+        return list(sessions)
+    return []
 
 
 @router.get("/{id}", status_code=200)
