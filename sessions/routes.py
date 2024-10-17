@@ -41,8 +41,16 @@ async def get_sessions(user=Depends(get_current_user)):
 async def get_active_sessions():
     sessions = db["sessions"].find({"end_time": {"$gte": datetime.now(tz=timezone.utc)}})
     if sessions:
-        return list(sessions)
-    return []
+        sessions = list(sessions)
+        for i in sessions:
+            if i["block_lists"]:
+                block_lists = db["block_lists"].find({"_id": {"$in": i["block_lists"]}})
+                if block_lists:
+                    block_lists = list(block_lists)
+                    for block_list in block_lists:
+                        i["block_lists"] = block_list["entries"]
+            i["id"] = i.pop("_id")
+        return sessions
 
 
 @router.get("/{id}", status_code=200)
