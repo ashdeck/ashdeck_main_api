@@ -24,7 +24,19 @@ async def create_session(session: Session, user=Depends(get_current_user)):
     session_dict["_id"] = id
     session_dict["user"] = user["_id"]
     db["sessions"].insert_one(session_dict)
+
+    if len(session_dict["block_lists"]) > 0:
+        block_lists = db["block_lists"].find({"_id": {"$in": session_dict["block_lists"]}})
+
+    if block_lists:
+        block_lists = list(block_lists)
+        for block_list in block_lists:
+            block_list["id"] = block_list.pop("_id")
+    else:
+        block_lists = []
+
     session_dict["id"] = session_dict.pop("_id")
+    session_dict["block_lists"] = block_lists
     return session_dict
 
 
