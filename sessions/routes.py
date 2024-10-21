@@ -45,6 +45,11 @@ async def get_sessions(user=Depends(get_current_user)):
     sessions = list(db["sessions"].find({"user": user["_id"]}))
     for session in sessions:
         session["id"] = session.pop("_id")
+        if len(session["block_lists"]) > 0:
+            block_lists = db["block_lists"].find({"_id": {"$in": session["block_lists"]}})
+            if block_lists:
+                block_lists = list(block_lists)
+                session["block_lists"] = block_lists
     print(sessions)
     return sessions
 
@@ -70,6 +75,11 @@ async def get_single_session(id: str, user=Depends(get_current_user)):
     session = db["sessions"].find_one({"_id": id})
     if session:
         session["id"] = session.pop("_id")
+        if len(session["block_lists"]) > 0:
+            block_lists = db["session"].find({"_id": {"$in": session["block_lists"]}})
+            if block_lists:
+                block_lists = list(block_lists)
+                session["block_lists"] = block_lists
         return session
     raise HTTPException(status_code=400, detail="Session not found.")
 
