@@ -88,6 +88,11 @@ async def get_single_session(id: str, user=Depends(get_current_user)):
 async def update_session(id: str, data: UpdateSession):
     data = data.model_dump(exclude_none=True)
     db["sessions"].update_one({"_id": id}, {"$set": data})
+    session = db["sessions"].find_one({"_id": id})
+    block_lists = db["block_lists"].find({"_id": {"$in": session["block_lists"]}})
+    if block_lists:
+        block_lists = list(block_lists)
+        session["block_lists"] = block_lists
     return {"message": "Session updated successfully."}
 
 
