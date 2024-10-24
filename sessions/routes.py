@@ -93,7 +93,7 @@ async def update_session(id: str, data: UpdateSession):
     if block_lists:
         block_lists = list(block_lists)
         session["block_lists"] = block_lists
-    return {"message": "Session updated successfully."}
+    return {"message": "Session updated successfully.", "session": session}
 
 
 @router.delete("/{id}", status_code=200, dependencies=[Depends(get_current_user)])
