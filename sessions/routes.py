@@ -93,6 +93,7 @@ async def update_session(id: str, data: UpdateSession):
     if block_lists:
         block_lists = list(block_lists)
         session["block_lists"] = block_lists
+    session["id"] = session.pop("_id")
     return {"message": "Session updated successfully.", "session": session}
 
 
